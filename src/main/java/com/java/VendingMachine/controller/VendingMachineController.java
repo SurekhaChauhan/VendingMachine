@@ -18,7 +18,16 @@ public class VendingMachineController {
         this.vendingMachineService = vendingMachineService;
     }
 	
-	@GetMapping("/choose/{item}/{money}")
+	/**
+	 * REST endpoint for Choosing Item and Sending Money to Vending Machine
+	 *
+	 * @param item
+	 * @param money
+	 *           
+	 * @return A VendingMachineDTO having total, item and conditionOfVendingMachine
+	 */
+	
+	@GetMapping(value = "/choose/{item}/{money}")
 	public VendingMachineDTO getItemAndChange(@PathVariable String item, @PathVariable String money) {
 		
 		VendingMachineDTO vendingMachineDTO =  vendingMachineService.getItemAndChange(item, money);

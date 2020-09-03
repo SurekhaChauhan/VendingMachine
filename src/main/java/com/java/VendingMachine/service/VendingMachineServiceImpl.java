@@ -4,66 +4,59 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+import com.java.VendingMachine.constants.VendingMachineConstant;
 import com.java.VendingMachine.dto.VendingMachineDTO;
 import com.java.VendingMachine.enums.CoinType;
 import com.java.VendingMachine.enums.Products;
+import com.java.VendingMachine.exception.NotAvailableException;
 
+/** * Implementation of Vending Machine*/
 public class VendingMachineServiceImpl implements VendingMachineService{
 
 	private static int Balance=0; //stores total balance
+	
+	/** * A Map to create Inventory to hold Products inside Vending Machine */
 	private static Map<String, Integer> itemInventory = new HashMap<String, Integer>(); //hashmap for items and its numbers
-	private static Map<String, Integer> coinInventory = new HashMap<String, Integer>(); //hashmap for coins and its numbers
+	
+	/** * A Map to create Coin Inventory to hold cash inside Vending Machine */
+	private static Map<String, Integer> coinInventory = new HashMap<String, Integer>(); //hashmap for coins and its numbers 
+
 
 	@Override
 	public VendingMachineDTO getItemAndChange(String item, String money) {
 		VendingMachineDTO vendingMachineDTO = new VendingMachineDTO();
 		int total = getTotalMoney(money, 0);
-		if(item.equals("COLDDRINK")){
-			System.out.println("You have selected "+Products.COLDDRINK.getName());
+		if(Products.COLDDRINK.toString().equals("COLDDRINK")) {
 			if(total >= Products.COLDDRINK.getPrice()){
 				total = total - Products.COLDDRINK.getPrice();
 				vendingMachineDTO.setTotal(total);
-				System.out.println("Thank you for your purchase!! ");
-				System.out.println("Your balance is "+total);
 			}else{
-				System.out.println("Insert more coins ");
 				vendingMachineDTO.setConditionOfVendingMachine(2);
 				return vendingMachineDTO;
 			}
-
-		}else if(item.equals("CANDY")){
-			System.out.println("You have selected "+Products.CANDY.getName());
-			if(total>=Products.CANDY.getPrice()){
+		}else if(Products.CANDY.toString().equals("CANDY")){
+			if(total>=Products.CANDY.getPrice()){ 
 				total = total - Products.CANDY.getPrice();
-				System.out.println("Thank you for your purchase!! ");
-				System.out.println("Your balance is "+total);
 				vendingMachineDTO.setTotal(total);
 			}else{
-				System.out.println("Insert more coins ");
 				vendingMachineDTO.setConditionOfVendingMachine(2);
 				return vendingMachineDTO;
 			}
-		}else if(item.equals("CHOCLATE")){
-			System.out.println("You have selected "+Products.CHOCLATE.getName());
+		}else if(Products.CHOCLATE.toString().equals("CHOCLATE")){
 			if(total>=Products.CHOCLATE.getPrice()){
 				total = total - Products.CHOCLATE.getPrice();
-				System.out.println("Thank you for your purchase!! ");
 				vendingMachineDTO.setTotal(total);
-				System.out.println("Your balance is "+total);
 			}else{
-				System.out.println("Insert more coins ");
 				vendingMachineDTO.setConditionOfVendingMachine(2);
 				return vendingMachineDTO;
 			}
 		}else if(item.equals("RETURN")){
-			System.out.println("Your balance is "+total+" and is returned.");
 			vendingMachineDTO.setConditionOfVendingMachine(1);
 			return vendingMachineDTO;
 		}else if(item.equals("CANCEL")){
 			vendingMachineDTO.setConditionOfVendingMachine(-1);
 			return vendingMachineDTO;
 		}else{
-			System.out.println("Wrong choice: Your balance is "+total);
 			vendingMachineDTO.setConditionOfVendingMachine(1);
 			return vendingMachineDTO;
 		}
@@ -82,11 +75,10 @@ public class VendingMachineServiceImpl implements VendingMachineService{
 		}else if(coin.equals("DOLLAR")){
 			total = total + CoinType.DOLLAR.getDenomination();
 		}else{
-			System.out.println("Wrong Input Coin");
+			total = -1;
 		}
 
 		return total;
-
 	}
 
 	@Override
@@ -95,30 +87,32 @@ public class VendingMachineServiceImpl implements VendingMachineService{
 		Scanner sc = new Scanner(System.in);
 		String sample=vendingMachineDTO.getItem(); // select items
 		int checkVendCond=0;
-		if(!itemInventory.containsKey(sample)){ // for return and cancel case
-			checkVendCond=vendingMachineDTO.getConditionOfVendingMachine();
-		} else if(itemInventory.get(sample)==0){ // Sold out items
-			System.out.println("Sold Out, Please insert coins and buy another item");
-		}else{
-			checkVendCond = vendingMachineDTO.getConditionOfVendingMachine();
-			if(checkVendCond==2){
-				sample=vendingMachineDTO.getItem();
-				if(itemInventory.get(sample)==0){
-					System.out.println("Sold Out, Please insert coins and buy the items");
-				} else if(itemInventory.get(sample)==1 || itemInventory.get(sample)==-1){
-
+		try {
+			if(!itemInventory.containsKey(sample)){ // for return and cancel case
+				checkVendCond=vendingMachineDTO.getConditionOfVendingMachine();
+			} else if(itemInventory.get(sample)==0){ // Sold out items
+				throw new NotAvailableException(VendingMachineConstant.SOLD_OUT_CUSTOM_EXCEPTION);
+			}else{
+				checkVendCond = vendingMachineDTO.getConditionOfVendingMachine();
+				if(checkVendCond==2){
+					sample=vendingMachineDTO.getItem();
+					if(itemInventory.get(sample)==0){
+						throw new NotAvailableException(VendingMachineConstant.SOLD_OUT_CUSTOM_EXCEPTION);
+					} else if(itemInventory.get(sample)==1 || itemInventory.get(sample)==-1){
+						throw new NotAvailableException(VendingMachineConstant.SOLD_OUT_CUSTOM_EXCEPTION);
+					}else{
+						itemInventory.put(sample, itemInventory.get(sample) - 1);
+						Balance=checkVendCond;
+					}
 				}else{
 					itemInventory.put(sample, itemInventory.get(sample) - 1);
 					Balance=checkVendCond;
 				}
-			}else{
-				itemInventory.put(sample, itemInventory.get(sample) - 1);
-				Balance=checkVendCond;
+
 			}
-
-		}
-
-		sc.close();		
+		}finally{
+			sc.close();	
+		}		
 	}
 
 	private static void initiateInventory(){

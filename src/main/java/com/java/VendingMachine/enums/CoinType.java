@@ -1,5 +1,7 @@
 package com.java.VendingMachine.enums;
 
+/** * Coin Type supported by our Vending Machine. */
+
 public enum CoinType {
 
 	NICKLE("NICKLE",5), DIME("DIME",10), QUARTER("QUARTER",25), DOLLAR("DOLLAR",100); 
@@ -7,7 +9,8 @@ public enum CoinType {
 	private String name;
 
 	private CoinType(String name, int denomination){ 
-		this.name = name; this.denomination = denomination; 
+		this.name = name; 
+		this.denomination = denomination; 
 	} 
 
 	public int getDenomination(){ 

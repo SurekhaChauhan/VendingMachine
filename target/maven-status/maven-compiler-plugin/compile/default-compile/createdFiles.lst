@@ -1,0 +1,7 @@
+com\java\VendingMachine\controller\VendingMachineController.class
+com\java\VendingMachine\service\VendingMachineServiceImpl.class
+com\java\VendingMachine\service\VendingMachineService.class
+com\java\VendingMachine\VendingMachine.class
+com\java\VendingMachine\enums\CoinType.class
+com\java\VendingMachine\dto\VendingMachineDTO.class
+com\java\VendingMachine\enums\Products.class

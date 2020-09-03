@@ -1,5 +1,6 @@
 package com.java.VendingMachine.enums;
 
+/** * Products Supported by our Vending Machine. */
 public enum Products {
 
 	COLDDRINK("COLDDRINK", 100), CANDY("CANDY", 65), CHOCLATE("CHOCLATE", 50);
